@@ -45,6 +45,9 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reorder\IMessage.cs" />
+    <Compile Include="Reorder\MessageManager.cs" />
+    <Compile Include="Reorder\MockMessage.cs" />
     <Compile Include="Reorder\ReorderMain.cs" />
     <Compile Include="Speech\SpeechMain.cs" />
     <Compile Include="Speech\TextElement.cs" />

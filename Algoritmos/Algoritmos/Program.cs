@@ -8,8 +8,8 @@ namespace Algoritmos
     {
         static void Main(string[] args)
         {
-            SpeechMain.Execute();
-            //ReorderMain.Execute();
+            //SpeechMain.Execute();
+            ReorderMain.Execute();
         }
     }
 }

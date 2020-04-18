@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Timers;
 
 namespace Algoritmos.Reorder
@@ -24,16 +23,13 @@ namespace Algoritmos.Reorder
                 if (num != 0)
                 {
                     numbers.RemoveAt(index);
-                    _messages.Enqueue(new MockMessage(num, $"numero {num.ToString()}"));
+                    messages.Enqueue(new MockMessage(num, Guid.NewGuid().ToString().Substring(0, 4)));
                 }
             }
 
-            Console.WriteLine("desordenados:");
-            Console.WriteLine(String.Join(", ", _messages.Select(m => m.Num)));
-            Console.WriteLine("ordenados:");
-
-            // Invocacion solo en caso necesario (aqui no hacia falta). Es posible resetear con numero inicial
-            MessageManager<MockMessage>.Reset();
+            Console.WriteLine("Desordenados:\n");
+            Console.WriteLine(string.Join(", ", messages.Select(m => m.Num)));
+            Console.WriteLine("\nOrdenados:\n");
 
             // Timer para crear mock de la recepcion de mensajes
             timer.Elapsed += Launch;
@@ -44,94 +40,29 @@ namespace Algoritmos.Reorder
             Console.ReadLine();
         }
 
-        private static Timer timer = new Timer(50);
+        private static System.Timers.Timer timer = new System.Timers.Timer(1);
 
-        private static Queue<MockMessage> _messages = new Queue<MockMessage>();
+        private static Queue<MockMessage> messages = new Queue<MockMessage>();
 
         private static void Launch(object sender, ElapsedEventArgs e)
         {
-            if (!_messages.Any())
+            if (!messages.Any())
             {
                 timer.Stop();
+                Console.WriteLine("*** Recibidos todos los mensajes!");
             }
             else
             {
-                var message = _messages.Dequeue();
+                var message = messages.Dequeue();
 
                 // Invocacion para cada mensaje recibido
-                MessageManager<MockMessage>
-                    .ProcessMessage(message.Num, message, m =>
+                MessageManager<IMessage>
+                    .ProcessMessage(message, m =>
                     {
-                        var text = string.Join(" ", m, DateTime.Now.ToString("mm:ss.fff"));
+                        var text = string.Join(" | ", m, DateTime.Now.ToString("mm:ss.fff"),"Thread: " + Thread.CurrentThread.ManagedThreadId);
                         Console.WriteLine(text);
                     });
             }
-        }
-    }
-    public class MockMessage
-    {
-        public MockMessage(int num, string message)
-        {
-            Num = num;
-            Message = message;
-        }
-
-        public int Num { get; }
-        public string Message { get; }
-
-        public override string ToString()
-        {
-            return Message;
-        }
-    }
-
-    public static class MessageManager<TManager>
-        where TManager : class
-    {
-        private class MessageWrapper<TWrapper>
-            where TWrapper : class
-        {
-            public MessageWrapper(int number, TWrapper message)
-            {
-                Number = number;
-                Message = message;
-            }
-
-            public int Number { get; }
-            public TWrapper Message { get; }
-
-            public override string ToString()
-            {
-                return Message.ToString();
-            }
-        }
-
-        private static int _currentNumber = 1;
-
-        private static List<MessageWrapper<TManager>> _receivedMessages = new List<MessageWrapper<TManager>>();
-
-        public static void ProcessMessage(int number, TManager message, Action<TManager> execute)
-        {
-            var messageContainer = new MessageWrapper<TManager>(number, message);
-            _receivedMessages.Add(messageContainer);
-
-            var messagesToSend = _receivedMessages
-                .OrderBy(m => m.Number)
-                .Where((m, i) => (m.Number - i) == _currentNumber)
-                .ToList();
-
-            messagesToSend.ForEach(m =>
-            {
-                _receivedMessages.Remove(m);
-                execute(m.Message);
-                _currentNumber++;
-            });
-        }
-
-        public static void Reset(int num = 1)
-        {
-            _currentNumber = num;
-            _receivedMessages = new List<MessageWrapper<TManager>>();
         }
     }
 }
