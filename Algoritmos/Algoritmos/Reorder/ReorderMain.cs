@@ -1,8 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Timers;
+
+/*
+ * Algoritmo para reordenar mensajes asincronicos
+ * 
+ * Existen servicios en la nube para comunicacion Real-time, como por ejemplo SignalR
+ * https://azure.microsoft.com/en-us/services/signalr-service/
+ * 
+ * Este tipo de servicios invierten la arquitectura cliente-servidor, de forma que el servidor
+ * puede enviar directamente mensajes instantaneos al cliente
+ * 
+ * Tiene un inconveniente, y es que no asegura que los mensajes se reciban en estricto orden
+ * si se trata de mensajes muy rapidos. Por esto, hay que reordenarlos en el cliente tras
+ * la recepcion
+ * 
+ * El objetivo de la practica es aprender genericos, interfaces, y orientacion a objetos
+ */
 
 namespace Algoritmos.Reorder
 {
@@ -10,9 +25,20 @@ namespace Algoritmos.Reorder
     {
         public static void Execute()
         {
+            GenerateMessages(100, 3);
+
+            StartTimer(1);
+
+            Console.ReadLine();
+        }
+
+        private static Timer timer = new Timer();
+
+        private static Queue<MockMessage> messages = new Queue<MockMessage>();
+
+        private static void GenerateMessages(int quantity, int variance)
+        {
             // Generacion de lista de numeros desordenada
-            var quantity = 100;
-            var variance = 3;
             var numbers = Enumerable.Range(1, quantity).ToList();
 
             var random = new Random();
@@ -30,38 +56,32 @@ namespace Algoritmos.Reorder
             Console.WriteLine("Desordenados:\n");
             Console.WriteLine(string.Join(", ", messages.Select(m => m.Num)));
             Console.WriteLine("\nOrdenados:\n");
-
-            // Timer para crear mock de la recepcion de mensajes
-            timer.Elapsed += Launch;
-            timer.AutoReset = true;
-            timer.Enabled = true;
-            timer.Start();
-
-            Console.ReadLine();
         }
 
-        private static System.Timers.Timer timer = new System.Timers.Timer(1);
+        private static void StartTimer(int miliseconds)
+        {
+            // Setup y Start del Timer
+            timer.Interval = miliseconds;
+            timer.Elapsed += SendMessage;
+            timer.AutoReset = true;
+            timer.Enabled = true;
+            Console.WriteLine("*** Start " + DateTime.Now.ToString("mm:ss.fff"));
+            timer.Start();
+        }
 
-        private static Queue<MockMessage> messages = new Queue<MockMessage>();
-
-        private static void Launch(object sender, ElapsedEventArgs e)
+        private static void SendMessage(object sender, ElapsedEventArgs e)
         {
             if (!messages.Any())
             {
                 timer.Stop();
-                Console.WriteLine("*** Recibidos todos los mensajes!");
+                Console.WriteLine("*** End " + DateTime.Now.ToString("mm:ss.fff"));
             }
             else
             {
                 var message = messages.Dequeue();
 
                 // Invocacion para cada mensaje recibido
-                MessageManager<IMessage>
-                    .ProcessMessage(message, m =>
-                    {
-                        var text = string.Join(" | ", m, DateTime.Now.ToString("mm:ss.fff"),"Thread: " + Thread.CurrentThread.ManagedThreadId);
-                        Console.WriteLine(text);
-                    });
+                MessageManager<IMessage>.ProcessMessage(message, m => m.Execute());
             }
         }
     }

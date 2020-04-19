@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 
 namespace Algoritmos.Reorder
 {
@@ -25,7 +24,7 @@ namespace Algoritmos.Reorder
 
                 if (messagesToSend.Any())
                 {
-                    //Console.WriteLine("*** Enviar");
+                    Console.WriteLine("*** Send");
                 }
 
                 messagesToSend.ForEach(m =>
@@ -33,7 +32,6 @@ namespace Algoritmos.Reorder
                     receivedMessages.Remove(m);
 
                     execute(m);
-                    Thread.Sleep(50);
 
                     currentNumber++;
                 });

@@ -34,7 +34,7 @@ using System.Linq;
  * "Inserta familia de inodoro de 40 por 60"
  * "Nuevo plano de instalaciones de fontaneria de la planta 5"
  * 
- * El objectivo de la practica es aprender a crear algoritmos, orientacion a objetos y Linq
+ * El objetivo de la practica es aprender a crear algoritmos, orientacion a objetos y Linq
  */
 
 namespace Algoritmos.Speech

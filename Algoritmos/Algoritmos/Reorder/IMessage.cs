@@ -2,7 +2,9 @@
 {
     public interface IMessage
     {
-        string Message { get; }
         int Num { get; }
+        string Message { get; }
+
+        void Execute();
     }
 }
