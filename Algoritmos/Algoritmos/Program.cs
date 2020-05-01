@@ -1,5 +1,6 @@
 ﻿using Algoritmos.Speech;
 using Algoritmos.Reorder;
+using Navigation;
 
 /*
  * Codigo del taller de programacion gratuito AMENIZAVIRUS, para el Grupo de Programacion BIM (España)
@@ -28,7 +29,8 @@ namespace Algoritmos
         static void Main(string[] args)
         {
             //SpeechMain.Execute();
-            ReorderMain.Execute();
+            //ReorderMain.Execute();
+            NavigationMain.Execute();
         }
     }
 }
