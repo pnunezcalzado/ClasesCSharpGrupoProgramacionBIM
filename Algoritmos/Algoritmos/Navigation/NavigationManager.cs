@@ -3,6 +3,23 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 
+/*
+ * Navegador de elementos para consola
+ * 
+ *          O  O  O  O  O
+ *          X [X] X  X  X
+ *          O  O  O  O  O
+ *          X  X  X  X  X
+ *          O  O  O  O  O
+ * 
+ * Funciona pulsando las flechas (Arriba, Abajo, Izquierda, Derecha)
+ * El elemento seleccionado se destaca mediante corchetes
+ * 
+ * Es posible crear una matriz irregular de elementos
+ * 
+ * El objetivo de la practica es aprender genericos, interfaces, y orientacion a objetos
+ */
+
 namespace Navigation
 {
     public class NavigationManager
